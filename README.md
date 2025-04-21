@@ -13,3 +13,14 @@ A real-time fraud detection pipeline that combines Apache Kafka, Apache Flink, a
 📡 Synthetic transaction data simulation
 
 🔍 Fraud detection based on reconstruction error
+
+
+🧪 How It Works
+
+1. Generate Data: Simulated transactions are sent to Kafka.
+
+2. Stream Processing: Flink consumes the stream and preprocesses each record.
+
+3. Anomaly Detection: The trained autoencoder reconstructs each input; a high reconstruction error indicates potential fraud.
+
+4. Alerting: Anomalous transactions are flagged for review.
