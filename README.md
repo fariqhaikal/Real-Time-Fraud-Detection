@@ -1,65 +1,52 @@
-# 💳 Real-Time Fraud Detection Pipeline
+# 💳 Real-Time Fraud Detection System
 
-A real-time fraud detection system built with **Apache Kafka**, **Apache Flink**, and a **PyTorch-based Autoencoder**, designed to detect suspicious financial transactions as they stream in. This project is fully containerized with Docker and is built to scale for production-like environments.
+A **real-time fraud detection system** designed to detect suspicious financial transactions as they stream in. Built with **Apache Kafka**, **PyTorch-based Autoencoder**, and a variety of heuristic checks, this system flags anomalous transactions for further review. This project is designed to be scalable, containerized with **Docker**, and tailored for production environments.
 
 ---
 
 ## 🚀 Features
 
-- ✅ **Real-time streaming** with Kafka
-- 🧠 **Deep Learning-based anomaly detection** (Autoencoder using PyTorch)
-- 🔄 **Scalable stream processing** via Apache Flink
-- 🐳 **Dockerized architecture** for easy setup
-- 🧪 **Synthetic transaction data generation** with labeled anomalies
-- 🔍 **Fraud detection logic** based on reconstruction error thresholding
+- ✅ **Real-time streaming** with **Kafka**
+- 🧠 **Deep learning-based anomaly detection** using **Autoencoders** (PyTorch)
+- 🔍 **Fraud detection logic** based on both **reconstruction loss** and **heuristic checks** (e.g., high transaction amounts, unusual locations, suspicious payment methods, account age)
+- 📦 **Real-time transaction flagging** into **CSV** files (`fraud.csv`, `normal.csv`)
+- 🐳 **Dockerized architecture** for easy setup and deployment
+- 💡 **Fraud detection insights** with **reasoning** for flagging suspicious transactions
 
 ---
 
 ## 🧪 How It Works
 
-1. **Data Simulation**  
-   A Python script generates synthetic normal and anomalous transaction data and streams it into Kafka.
+1. **Transaction Data Simulation**  
+   A Python script generates synthetic transaction data, including both normal and anomalous transactions, which are then streamed into **Kafka**.
 
-2. **Stream Processing with Flink**  
-   Flink consumes transactions from Kafka in real time, preparing them for analysis.
-
+2. **Fraud Detection Consumer**  
+   A Kafka consumer continuously processes incoming transactions:
+   - **Deep Learning Model**: The autoencoder reconstructs transactions and flags those with large reconstruction errors.
+   - **Heuristic Rules**: Transactions are also checked for suspicious behavior (e.g., high transaction amounts, unusual locations, and payment methods, and account age).
+   
 3. **Anomaly Detection**  
-   A trained autoencoder tries to reconstruct each transaction. Large reconstruction errors signal anomalies.
+   If the reconstruction error exceeds a defined threshold or if heuristic checks fail, the transaction is flagged as potentially fraudulent.
 
-4. **Fraud Alerting**  
-   Anomalous transactions are printed or flagged for review in real time.
+4. **Real-time Flagging**  
+   Flagged transactions are saved into `fraud.csv` with customer ID and reasons for flagging. Normal transactions are saved into `normal.csv`.
 
 ---
 
 ## 📦 Tech Stack
 
-- **Kafka** – Distributed event streaming
-- **Flink** – Real-time stream processing
-- **PyTorch** – Deep learning (Autoencoder)
-- **Docker Compose** – Container orchestration
-- **Pandas / NumPy** – Data preprocessing
-- **Confluent Kafka** – Kafka client for Python
+- **Kafka** – Distributed event streaming platform
+- **PyTorch** – Deep learning framework (Autoencoder for anomaly detection)
+- **Docker** – Containerization for deployment
+- **Python** – Backend and data processing (using libraries such as Pandas, NumPy)
+- **joblib** – Saving and loading model and preprocessors
+- **Kafka Consumer** – Real-time processing of transaction streams
 
 ---
 
 ## 🛠 Setup Instructions
 
+### 1. Clone the Repository
 ```bash
-# 1. Clone this repo
-git clone https://gitlab.com/your-username/Real-Time-Fraud-Detection.git
+git clone https://github.com/your-username/Real-Time-Fraud-Detection.git
 cd Real-Time-Fraud-Detection
-
-# 2. Start the services
-docker-compose up -d
-
-# 3. Train the model (generates autoencoder.pth, scaler.pkl, encoder.pkl)
-python train_autoencoder.py
-
-# 4. Start the producer (sends transactions to Kafka)
-python kafka_producer.py
-
-# 5. Start the Flink pipeline
-python flink_consumer.py
-
-# 6. (Optional) Run live fraud detection consumer
-python fraud_detector.py
